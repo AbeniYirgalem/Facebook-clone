@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/post_widget.dart';
+import 'groups_screen.dart';
+import 'marketplace_screen.dart';
+import 'notifications_screen.dart';
 import 'settings_screen.dart';
+import 'videos_screen.dart';
+import 'menu_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -91,33 +96,91 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isMarketplace = _currentTab == 3;
+    final bool isNotifications = _currentTab == 4;
+    final bool isVideos = _currentTab == 1;
+    final bool isGroups = _currentTab == 2;
+    final bool isMenu = _currentTab == 5;
+
+    final bool useWhiteBg =
+        isMarketplace || isNotifications || isVideos || isGroups || isMenu;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F2F6),
+      backgroundColor: useWhiteBg ? Colors.white : const Color(0xFFF1F2F6),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
         titleSpacing: 12,
-        title: const Text(
-          'facebook',
-          style: TextStyle(
-            color: Color(0xFF1877F2),
-            fontWeight: FontWeight.w900,
-            letterSpacing: -0.5,
-          ),
-        ),
-        actions: [
-          _roundIcon(Icons.add),
-          _roundIcon(Icons.search),
-          _roundIcon(Icons.message_outlined),
-          _roundIcon(
-            Icons.settings,
-            onTap: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
-            },
-          ),
-        ],
+        title: isMarketplace
+            ? const Text(
+                'Marketplace',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                ),
+              )
+            : isNotifications
+            ? const Text(
+                'Notifications',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                ),
+              )
+            : isVideos
+            ? const Text(
+                'Watch',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                ),
+              )
+            : isGroups
+            ? const Text(
+                'Groups',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                ),
+              )
+            : isMenu
+            ? const Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                ),
+              )
+            : const Text(
+                'facebook',
+                style: TextStyle(
+                  color: Color(0xFF1877F2),
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
+              ),
+        actions: isMarketplace
+            ? [_roundIcon(Icons.person_outline), _roundIcon(Icons.search)]
+            : isNotifications
+            ? [_roundIcon(Icons.search)]
+            : [
+                _roundIcon(Icons.add),
+                _roundIcon(Icons.search),
+                _roundIcon(Icons.message_outlined),
+                _roundIcon(
+                  Icons.settings,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                    );
+                  },
+                ),
+              ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(44),
           child: Container(
@@ -141,19 +204,43 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        children: [
-          _composerCard(),
-          _quickActions(),
-          const SizedBox(height: 6),
-          _storiesRow(),
-          _friendsReminderCard(),
-          const SizedBox(height: 4),
-          ..._posts.map((post) => PostWidget(post: post)),
-          const SizedBox(height: 16),
-        ],
-      ),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    return IndexedStack(
+      index: _currentTab,
+      children: [
+        // 0
+        _homeFeed(),
+        // 1
+        const VideosScreen(),
+        // 2
+        const GroupsScreen(),
+        // 3
+        const MarketplaceScreen(),
+        // 4
+        const NotificationsScreen(),
+        // 5
+        const MenuScreen(),
+      ],
+    );
+  }
+
+  Widget _homeFeed() {
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      children: [
+        _composerCard(),
+        _quickActions(),
+        const SizedBox(height: 6),
+        _storiesRow(),
+        _friendsReminderCard(),
+        const SizedBox(height: 4),
+        ..._posts.map((post) => PostWidget(post: post)),
+        const SizedBox(height: 16),
+      ],
     );
   }
 
